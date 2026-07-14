@@ -8,6 +8,7 @@
 
 (defun meow-setup ()
   (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
+  (setq meow-expand-hint-remove-delay 2.5)
   (meow-motion-define-key
    '("j" . meow-next)
    '("k" . meow-prev)
