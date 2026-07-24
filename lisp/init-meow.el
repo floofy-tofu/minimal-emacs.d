@@ -8,7 +8,7 @@
 
 (defun meow-setup ()
   (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
-  (setq meow-expand-hint-remove-delay 2.5)
+  ;; (setq meow-expand-hint-remove-delay 2.5)
   (meow-motion-define-key
    '("j" . meow-next)
    '("k" . meow-prev)
@@ -88,7 +88,19 @@
    '("Y" . meow-sync-grab)
    '("z" . meow-pop-selection)
    '("'" . repeat)
-   '("<escape>" . ignore)))
+   '("<escape>" . ignore))
+  (setq meow-char-thing-table '((?\( . round)
+                                (?\[ . square)
+                                (?\{ . curly)
+                                (?\" . string)
+                                (?e . symbol)
+                                (?w . window)
+                                (?b . buffer)
+                                (?p . paragraph)
+                                (?l . line)
+                                (?d . defun)
+                                (?. . sentence))))
+
 
 (meow-setup)
 (meow-global-mode 1)
