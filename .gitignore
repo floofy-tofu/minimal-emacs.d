@@ -1,3 +1,6 @@
+# Emacs tilde files that show up if I run -q after breaking something
+*~
+
 !README.md
 !early-init.el
 !init.el
@@ -9,3 +12,6 @@
 /eln-cache/
 /elpa/
 *.elc
+/tree-sitter/
+/transient/
+/projects
