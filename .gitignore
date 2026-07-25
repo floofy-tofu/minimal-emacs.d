@@ -3,3 +3,9 @@
 !init.el
 !.github/
 !.LICENSE
+/.envrc
+/autosave/
+/custom.el
+/eln-cache/
+/elpa/
+*.elc
