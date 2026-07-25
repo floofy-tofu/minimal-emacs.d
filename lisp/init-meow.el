@@ -4,9 +4,7 @@
 ;;; Code:
 (use-package meow
   :vc
-  )
-
-(defun meow-setup ()
+  :config
   (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
   ;; (setq meow-expand-hint-remove-delay 2.5)
   (meow-motion-define-key
@@ -99,11 +97,9 @@
                                 (?p . paragraph)
                                 (?l . line)
                                 (?d . defun)
-                                (?. . sentence))))
+                                (?. . sentence)))
+  (meow-global-mode 1))
 
-
-(meow-setup)
-(meow-global-mode 1)
 
 (provide 'init-meow)
 

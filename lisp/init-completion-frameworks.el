@@ -15,7 +15,7 @@
   (tab-always-indent 'complete)
 
   ;; Enable Corfu
-  :init
+  :config
   (global-corfu-mode))
 
 ;; Cape, or Completion At Point Extensions, extends the capabilities of
