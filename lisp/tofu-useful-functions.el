@@ -50,6 +50,13 @@ VARIABLES."
       (goto-char (point-max))
       (insert ";;; " file " ends here"))))
 
+(defun tofu/xref-references-vanilla-xref ()
+  "xref find references without consult and vertico"
+  (interactive)
+  (let ((xref-show-xrefs-function #'xref--show-xref-buffer)
+        (xref-show-definitions-function #'xref-show-definitions-buffer))
+    (call-interactively #'xref-find-references)))
+
 
 (provide 'tofu-useful-functions)
 ;;; tofu-useful-functions.el ends here

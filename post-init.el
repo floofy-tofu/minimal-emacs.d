@@ -7,6 +7,7 @@
 (require 'init-completion-frameworks)
 (require 'init-meow)
 (require 'init-magit)
+(require 'init-c)
 
 ;;; Programming Languages
 
