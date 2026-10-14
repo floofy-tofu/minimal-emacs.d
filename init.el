@@ -100,6 +100,9 @@
       ;; code on your machine.
       enable-local-eval nil)
 
+;;  `prettify-symbols-mode': Show unprettified symbol at point
+(setq prettify-symbols-unprettify-at-point 'right-edge)
+
 ;;; Minibuffer
 
 (setq enable-recursive-minibuffers t ; Allow nested minibuffers
@@ -211,7 +214,13 @@
 
 (setq ansi-color-for-comint-mode t ; Renders native ANSI colors in the shell
       comint-prompt-read-only t
-      comint-buffer-maximum-size 4096)
+      comint-buffer-maximum-size 4096
+      ;; Move the cursor to the bottom when the process prints new output
+      comint-move-point-for-output t
+      ;; Scroll the window viewport down when new output arrives
+      comint-scroll-to-bottom-on-output t
+      ;; Snap the view back down to the prompt the moment you start typing
+      comint-scroll-to-bottom-on-input t)
 
 ;;; Compilation
 
@@ -224,6 +233,10 @@
 
       ;; Skip confirmation prompts when creating a new file or buffer
       confirm-nonexistent-file-or-buffer nil)
+
+;; Add the ANSI color filter to the compilation filter hook to apply colors
+;; immediately during compilation output processing.
+(add-hook 'compilation-filter-hook 'ansi-color-compilation-filter)
 
 ;;; Backup files
 
@@ -252,6 +265,16 @@
 ;;; VC
 
 (setq vc-git-print-log-follow t
+      ;; Remove obsolete version control systems to enhance file loading
+      ;; performance, especially over TRAMP:
+      ;;   - SCCS: A historical version control system.
+      ;;   - SRC: A niche system with limited adoption.
+      ;;   - Bzr: Obsolete. Even Canonical migrated to Git.
+      ;;   - CVS: Largely superseded by newer version control systems.
+      ;; Exception:
+      ;;   - RCS: Obsolete, but still used by some sysadmins to version
+      ;;     individual files, including files under /etc.
+      vc-handled-backends '(Git SVN Hg RCS)
       vc-git-diff-switches '("--histogram"))  ; Faster algorithm for diffing.
 
 ;;; Auto save
@@ -284,7 +307,8 @@ This should be called after changing `auto-save-list-file-prefix'."
           ("\\`/\\([^/]+/\\)*\\([^/]+\\)\\'"
            ;; Redirect absolute file paths auto-saves to the
            ;; `auto-save-list-file-prefix' directory. This appends the base
-           ;; filename to the prefix, avoiding #file.txt# files across the system.
+           ;; filename to the prefix, avoiding #file.txt# files across the
+           ;; system.
            ,(file-name-concat auto-save-list-file-prefix "\\2-") sha1)))
 
   (when (memq system-type '(windows-nt cygwin ms-dos))
@@ -326,7 +350,7 @@ This should be called after changing `auto-save-list-file-prefix'."
 ;;; recentf
 
 ;; `recentf' is an that maintains a list of recently accessed files.
-(setq recentf-max-saved-items 300 ; default is 20
+(setq recentf-max-saved-items 210
       recentf-max-menu-items 15)
 
 ;;; saveplace
@@ -365,13 +389,14 @@ This should be called after changing `auto-save-list-file-prefix'."
  ;; Move point to top/bottom of buffer before signaling a scrolling error.
  scroll-error-top-bottom t
 
- ;; Keep screen position if scroll command moved it vertically out of the window.
+ ;; Keep screen position if scroll command moved it vertically out of the
+ ;; window.
  scroll-preserve-screen-position t
 
- ;; Emacs recenters the window when the cursor moves past `scroll-conservatively'
- ;; lines beyond the window edge. A value over 101 disables recentering; the
- ;; default (0) is too eager. Here it is set to 20 for a balanced behavior.
- scroll-conservatively 20
+ ;; Emacs recenters the window when the cursor moves past
+ ;; `scroll-conservatively' lines beyond the window edge. A value over 101
+ ;; disables recentering; the default (0) is too eager.
+ scroll-conservatively 11
 
  ;; 1. Preventing automatic adjustments to `window-vscroll' for long lines.
  ;; 2. Resolving the issue of random half-screen jumps during scrolling.
@@ -412,6 +437,10 @@ This should be called after changing `auto-save-list-file-prefix'."
  delete-pair-blink-delay 0.03)
 
 (setq-default
+ ;; Saves CPU cycles by preventing the display engine from continually
+ ;; calculating and redrawing hollow cursors in inactive windows.
+ cursor-in-non-selected-windows nil
+
  ;; Continue wrapped lines at whitespace rather than breaking in the
  ;; middle of a word.
  word-wrap t
@@ -433,8 +462,8 @@ This should be called after changing `auto-save-list-file-prefix'."
  fill-column 80)
 
 (setq
- ;; If enabled and `truncate-lines' is disabled, soft wrapping will not occur
- ;; when the window is narrower than `truncate-partial-width-windows' characters.
+ ;; If enabled and `truncate-lines' is nil, soft wrapping will not occur when
+ ;; the window is narrower than `truncate-partial-width-windows' characters.
  truncate-partial-width-windows nil
 
  ;; Enable indentation and completion using the TAB key
@@ -452,7 +481,7 @@ This should be called after changing `auto-save-list-file-prefix'."
  ;; This prevents unintended visual gaps and maintains a consistent appearance.
  comment-empty-lines t
 
- ;; Disable the obsolete practice of end-of-line spacing from the typewriter era.
+ ;; Disable the obsolete practice of end-of-line spacing.
  sentence-end-double-space nil
 
  ;; According to the POSIX, a line is defined as "a sequence of zero or more
@@ -477,7 +506,7 @@ This should be called after changing `auto-save-list-file-prefix'."
 ;;; Filetype
 
 (setq
- ;; Do not notify the user each time Python tries to guess the indentation offset
+ ;; Do not notify the user each time Python tries to guess the indent offset
  python-indent-guess-indent-offset-verbose nil
  sh-indent-after-continuation 'always)
 
@@ -542,6 +571,7 @@ This should be called after changing `auto-save-list-file-prefix'."
  help-enable-completion-autoload nil
  help-enable-autoload nil
  help-enable-symbol-autoload nil
+ help-clean-buttons t
  help-window-select t)  ;; Focus new help windows when opened
 
 ;;; Eglot
@@ -549,8 +579,8 @@ This should be called after changing `auto-save-list-file-prefix'."
 (setq eglot-report-progress init-file-debug ; Prevent minibuffer spam
       eglot-autoshutdown t ; Shut down after killing last managed buffer
 
-      ;; A setting of nil or 0 means Eglot will not block the UI at all, allowing
-      ;; Emacs to remain fully responsive, although LSP features will only become
+      ;; A setting of 0 means Eglot will not block the UI at all, allowing Emacs
+      ;; to remain fully responsive, although LSP features will only become
       ;; available once the connection is established in the background.
       eglot-sync-connect 0
 
@@ -566,9 +596,10 @@ This should be called after changing `auto-save-list-file-prefix'."
 (if init-file-debug
     (setq eglot-events-buffer-config '(:size 2000000 :format full))
   ;; This reduces log clutter to improves performance.
+  (with-no-warnings
+    (setq eglot-events-buffer-size 0))  ; Deprecated
   (setq jsonrpc-event-hook nil
         ;; Reduce memory usage and avoid cluttering *EGLOT events* buffer
-        eglot-events-buffer-size 0  ; Deprecated
         eglot-events-buffer-config '(:size 0 :format short)))
 
 ;;; Flymake
