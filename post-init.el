@@ -63,4 +63,10 @@
     (push (concat "/" (file-name-nondirectory custom-file))
           compile-angel-excluded-path-suffixes)))
 
+
+;;; Load a file not committed to git
+(when (file-exists-p "~/tofu-personal-elisp.el")
+  (load-file "~/tofu-personal-elisp.el"))
+
+
 ;;; post-init.el ends here
