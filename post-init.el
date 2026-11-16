@@ -3,11 +3,14 @@
 
 ;;; Code:
 (add-to-list 'load-path (concat user-emacs-directory "lisp"))
+(add-to-list 'load-path (concat user-emacs-directory "no-commit-lisp"))
 (require 'tofu-useful-functions)
 (require 'init-completion-frameworks)
 (require 'init-meow)
 (require 'init-magit)
 (require 'init-c)
+(require 'init-hdl)
+(require 'init-direnv)
 
 ;;; Programming Languages
 
